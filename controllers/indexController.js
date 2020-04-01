@@ -66,9 +66,6 @@ class indexController {
     const brand = req.params.brand;
     const url = `https://www.carqueryapi.com/api/0.3/?cmd=getTrims&make=${brand}&model=${model}`;
     let list = await this.doRequest(url);
-
-    console.log(list.Trims[0]);
-
     let specs = list.Trims[0];
 
     let result = {};
