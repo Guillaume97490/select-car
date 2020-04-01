@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>select-car</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+
+  <div class="container my-5">
+
+    <form>
+      <div class="row no-gutters m-auto col-md-12">
+        <h1 class="text-center py-5 col-12">select-car
+
+
+        </h1>
+        <div class="text-center col-md-6 mb-2 mb-md-0 px-3">
+
+          <select class="form-control" id="brands-select">
+            <option id="default-brand" selected disabled value="">Selectionez la marque :</option>
+            <% brands.forEach(brand => { %>
+            <option value="<%= brand %>"><%= brand %></option>
+            <% }) %>
+          </select>
+
+
+
+        </div>
+
+        <div class="col-md-6 px-3">
+          <select class="form-control" id="models-select">
+            <option id="default-model" selected disabled value=""></option>
+          </select>
+        </div>
+        <div class="col-12 py-4 text-center">
+          <span id="loader" class="spinner-border d-none" role="status">
+            <span class="sr-only">Loading...</span>
+          </span>
+          <button class="btn btn-warning reset-btn" type="reset">Réinitialiser</button>
+
+        </div>
+
+        
+
+        <div class="card d-none bg-light col-12 m-auto">
+          <div class="card-header">
+            <h4 class="card-title"><span id="user-nom"></span> <span id="user-prenom"></span>
+          </div>
+          </h4>
+
+          <div class="card-body"></div>
+
+        </div>
+
+      </div>
+
+    </form>
+
+
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+  <script>
+
+
+    $('.reset-btn').addClass('d-none');
+
+    // get the models data and show on models select
+    $('#brands-select').on('change', function () {
+      let brand = $(this).find(":checked").val();
+      $('#loader').removeClass('d-none');
+      $('.reset-btn').addClass('d-none');
+      $.get(`/${brand}/models`, (models) => {
+        $("#models-select").html(`<option id="default-model" selected disabled value="">selectionez le model</option>`)
+        models.forEach(model => {
+          $("#models-select").append(`<option value="${model}">${model}</option>`)
+        });
+        $('#loader').addClass('d-none');
+        $('.reset-btn').removeClass('d-none');
+        $('.card').addClass("d-none");
+      });
+
+    });
+
+
+    // get specs on one model
+    $('#models-select').on('change', function () {
+      let model = $(this).find(":checked").val();
+      let brand = $("#brands-select").find(":checked").val();
+
+      $('#loader').removeClass('d-none');
+      $('.reset-btn').addClass('d-none');
+
+      $('.card').addClass("d-none");
+      $('.card-body').html('');
+
+      $.get(`/${brand}/${model}/specs`, (specs) => {
+        for (spec in specs) {
+          $('.card-body').append(`<p class="card-text">${spec} : <span id="user-tel">${specs[spec]}</span></p>`)
+        }
+        $('.card').removeClass("d-none");
+        $('#loader').addClass('d-none');
+        $('.reset-btn').removeClass('d-none');
+      })
+    });
+
+    $('.reset-btn').on('click', () => { 
+
+      $('.card').addClass('d-none');
+      $('.reset-btn').addClass('d-none'); 
+      $("#models-select").html(`<option id="default-model" selected disabled value=""></option>`)
+    })
+  </script>
+</body>
+
+</html>
